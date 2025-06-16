@@ -211,108 +211,78 @@ class ComparaSequenze:
 #     assert frazione1.isGreater(frazione2), "1/2 should be greater than 1/3"
 #     print("testFrazione3IsMaggiore passou!")
 
-def testAcquisisciSequenzaRealiNotNull():
-    import builtins
-    original_input = builtins.input
-    builtins.input = lambda: "0"  # Simula o usuário digitando apenas 0
-    cs = ComparaSequenze()
-    resultado = cs.ler_sequencia_A()
-    assert resultado is not None, "Sequenza A should not be null"
-    builtins.input = original_input
-    print("testAcquisisciSequenzaRealiNotNull passou!")
+import unittest
+from unittest.mock import patch
 
-def testAcquisisciSequenzaRealiContents():
-    import builtins
-    original_input = builtins.input
-    inputs = iter(["1.0", "2.0", "3.0", "4.0", "0"])
-    builtins.input = lambda: next(inputs)
-    cs = ComparaSequenze()
-    resultado = cs.ler_sequencia_A()
-    expected = [1.0, 2.0, 3.0, 4.0]
-    assert resultado == expected, f"Esperado {expected}, mas obteve {resultado}"
-    builtins.input = original_input
-    print("testAcquisisciSequenzaRealiContents passou!")
+class TestComparaSequenze(unittest.TestCase):
+    def testAcquisisciSequenzaRealiNotNull(self):
+        # Simula o usuário digitando apenas 0
+        with patch('builtins.input', side_effect=["0"]):
+            cs = ComparaSequenze()
+            resultado = cs.ler_sequencia_A()
+            self.assertIsNotNone(resultado)
+            self.assertEqual(resultado, [])
 
-def testAcquisisciSequenzaFrazioniNotNull():
-    import builtins
-    original_input = builtins.input
-    # Simula o usuário digitando uma fração negativa logo de início
-    inputs = iter(["-1/2"])
-    builtins.input = lambda: next(inputs)
-    cs = ComparaSequenze()
-    resultado = cs.ler_sequencia_B()
-    assert resultado is not None, "Sequenza B should not be null"
-    builtins.input = original_input
-    print("testAcquisisciSequenzaFrazioniNotNull passou!")
+    def testAcquisisciSequenzaRealiContents(self):
+        # Simula o usuário digitando 1.0, 2.0, 3.0, 4.0, 0
+        entradas = ["1.0", "2.0", "3.0", "4.0", "0"]
+        with patch('builtins.input', side_effect=entradas):
+            cs = ComparaSequenze()
+            resultado = cs.ler_sequencia_A()
+            expected = [1.0, 2.0, 3.0, 4.0]
+            self.assertEqual(resultado, expected)
 
-def testAcquisisciSequenzaFrazioniContents():
-    import builtins
-    original_input = builtins.input
-    inputs = iter(["1/10", "100/2", "100/100", "5/4", "-1/2"])
-    builtins.input = lambda: next(inputs)
-    cs = ComparaSequenze()
-    resultado = cs.ler_sequencia_B()
-    expected = [Fraction(1, 10), Fraction(100, 2), Fraction(100, 100), Fraction(5, 4)]
-    # Compara numerador e denominador de cada fração
-    assert len(resultado) == len(expected), f"Esperado {len(expected)} frações, mas obteve {len(resultado)}"
-    for r, e in zip(resultado, expected):
-        assert r.getNumerator() == e.getNumerator() and r.getDenominator() == e.getDenominator(), \
-            f"Esperado {e.getNumerator()}/{e.getDenominator()}, mas obteve {r.getNumerator()}/{r.getDenominator()}"
-    builtins.input = original_input
-    print("testAcquisisciSequenzaFrazioniContents passou!")
+    def testAcquisisciSequenzaFrazioniNotNull(self):
+        # Simula o usuário digitando uma fração negativa logo de início
+        entradas = ["-1/2"]
+        with patch('builtins.input', side_effect=entradas):
+            cs = ComparaSequenze()
+            resultado = cs.ler_sequencia_B()
+            self.assertIsNotNone(resultado)
+            self.assertEqual(resultado, [])
 
-def calcola_meta_minore(sequenzaA):
-    # Soma todos os elementos e divide por 2
-    return sum(sequenzaA) / 2
+    def testAcquisisciSequenzaFrazioniContents(self):
+        # Simula o usuário digitando várias frações e depois uma negativa
+        entradas = ["1/10", "100/2", "100/100", "5/4", "-1/2"]
+        with patch('builtins.input', side_effect=entradas):
+            cs = ComparaSequenze()
+            resultado = cs.ler_sequencia_B()
+            expected = [Fraction(1, 10), Fraction(100, 2), Fraction(100, 100), Fraction(5, 4)]
+            self.assertEqual(len(resultado), len(expected))
+            for r, e in zip(resultado, expected):
+                self.assertEqual(r.getNumerator(), e.getNumerator())
+                self.assertEqual(r.getDenominator(), e.getDenominator())
 
-def testCalcolaMetaMinore():
-    sequenzaA = [2.0, 4.0, 6.0]
-    expected = 6.0
-    result = calcola_meta_minore(sequenzaA)
-    assert abs(result - expected) < 0.001, f"Esperado {expected}, mas obteve {result}"
-    print("testCalcolaMetaMinore passou!")
+    def testCalcolaMetaMinore(self):
+        # Testa metade da soma de uma lista
+        sequenzaA = [2.0, 4.0, 6.0]
+        expected = 6.0
+        result = sum(sequenzaA) / 2
+        self.assertAlmostEqual(result, expected, places=3)
 
-def testCalcolaMetaMinoreEmptyList():
-    sequenzaA = []
-    expected = 0.0
-    result = calcola_meta_minore(sequenzaA)
-    assert abs(result - expected) < 0.001, f"Esperado {expected}, mas obteve {result}"
-    print("testCalcolaMetaMinoreEmptyList passou!")
+    def testCalcolaMetaMinoreEmptyList(self):
+        # Testa lista vazia
+        sequenzaA = []
+        expected = 0.0
+        result = sum(sequenzaA) / 2
+        self.assertAlmostEqual(result, expected, places=3)
 
-def testFrazione3Constructor():
-    frazione = Fraction(2, 3)
-    assert frazione is not None, "Frazione3 object should not be null"
-    assert frazione.getNumerator() == 2, f"Esperado numerador 2, mas obteve {frazione.getNumerator()}"
-    assert frazione.getDenominator() == 3, f"Esperado denominador 3, mas obteve {frazione.getDenominator()}"
-    print("testFrazione3Constructor passou!")
+    def testFrazione3Constructor(self):
+        # Testa construtor da fração
+        frazione = Fraction(2, 3)
+        self.assertIsNotNone(frazione)
+        self.assertEqual(frazione.getNumerator(), 2)
+        self.assertEqual(frazione.getDenominator(), 3)
 
-def testFrazione3IsMaggiore():
-    frazione1 = Fraction(1, 2)
-    frazione2 = Fraction(1, 3)
-    assert frazione1.isGreater(frazione2), "1/2 should be greater than 1/3"
-    print("testFrazione3IsMaggiore passou!")
+    def testFrazione3IsMaggiore(self):
+        # Testa comparação de frações
+        frazione1 = Fraction(1, 2)
+        frazione2 = Fraction(1, 3)
+        self.assertTrue(frazione1.isGreater(frazione2))
+
 
 if __name__ == "__main__":
-    # Executar os testes
-    cs = ComparaSequenze()
-    testAcquisisciSequenzaRealiNotNull()
-    testAcquisisciSequenzaRealiContents()
-    testAcquisisciSequenzaFrazioniNotNull()
-    testAcquisisciSequenzaFrazioniContents()
-    testCalcolaMetaMinore()
-    testCalcolaMetaMinoreEmptyList()
-    testFrazione3Constructor()
-    testFrazione3IsMaggiore()
-    
-    # Executa os testes
-    # testAcquisisciSequenzaRealiNotNull()
-    # testAcquisisciSequenzaRealiContents()
-    # testAcquisisciSequenzaFrazioniNotNull()
-    # testAcquisisciSequenzaFrazioniContents()
-    # testCalcolaMetaMinore()
-    # testCalcolaMetaMinoreEmptyList()
-    # testFrazione3Constructor()
-    # testFrazione3IsMaggiore()
+    unittest.main()
     
     # Executa o programa principal
     print("\n--- Executando ComparaSequenze ---")
