@@ -1,3 +1,5 @@
+import unittest
+
 class MatriceException(Exception):
     pass
 
@@ -8,16 +10,17 @@ class MatriceStringa:
         self.m = [[val for _ in range(c)] for _ in range(r)]
 
     def set(self, r, c, val):
-        if r < 0 or r >= len(self.m) or c < 0 or c >= len(self.m[0]):
+        if not (0 <= r < len(self.m) and 0 <= c < len(self.m[0])):
             raise MatriceException()
         self.m[r][c] = val
 
     def rigaToString(self, idx, separatore):
-        if separatore is None or idx < 0 or idx >= len(self.m):
-            raise MatriceException()
+        if separatore is None:
+            raise MatriceException("Separatore cannot be null")
+        if not (0 <= idx < len(self.m)):
+            raise MatriceException("Index out of bounds")
+        
         return separatore.join(self.m[idx])
-
-import unittest
 
 class TestMatriceStringa(unittest.TestCase):
     def test_valid_matrix_creation(self):
@@ -100,3 +103,4 @@ class TestMatriceStringa(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
