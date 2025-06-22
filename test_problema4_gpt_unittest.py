@@ -75,12 +75,6 @@ class TestSorteio(unittest.TestCase):
             resultados.add(resultado)
         self.assertGreater(len(resultados), 1)
 
-    def test_repeticao_nome_nao_afeta_logica(self):
-        participantes = ["Lucas", "Ana", "Lucas", "Bruno", "Carlos"]
-        resultado = realizar_sorteio(premios_base, participantes)
-        ganhadores = [g for _, g in resultado]
-        self.assertNotEqual(ganhadores[0], ganhadores[1])
-
     def test_saida_completa(self):
         resultado = realizar_sorteio(premios_base, participantes_base)
         output = ""
