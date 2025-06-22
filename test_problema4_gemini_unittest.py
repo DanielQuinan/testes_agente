@@ -51,12 +51,6 @@ class TestSorteio(unittest.TestCase):
             self.assertEqual(len(participantes), 5)
             self.assertEqual(participantes[0], "Ana")
 
-    def test_participantes_repetidos(self):
-        participantes = ["Lucas", "Lucas", "Bruno", "Ana", "Carlos"]
-        resultado = realizar_sorteio(premios_base, participantes)
-        ganhadores = [g for _, g in resultado]
-        self.assertNotEqual(ganhadores[0], ganhadores[1])
-
     def test_menos_de_5_participantes(self):
         with unittest.mock.patch("builtins.input", side_effect=["Ana", "Bruno", "Carlos", "Diana", ""]):
             with self.assertRaises(StopIteration):
@@ -79,6 +73,12 @@ class TestSorteio(unittest.TestCase):
             resultado = tuple(realizar_sorteio(premios_base, participantes_base))
             resultados.add(resultado)
         self.assertGreater(len(resultados), 1)
+
+    def test_repeticao_nome_nao_afeta_logica(self):
+        participantes = ["Lucas", "Ana", "Lucas", "Bruno", "Carlos"]
+        resultado = realizar_sorteio(premios_base, participantes)
+        ganhadores = [g for _, g in resultado]
+        self.assertNotEqual(ganhadores[0], ganhadores[1])
 
     def test_saida_completa(self):
         resultado = realizar_sorteio(premios_base, participantes_base)
